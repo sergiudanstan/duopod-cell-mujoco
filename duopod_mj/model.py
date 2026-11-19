@@ -111,14 +111,16 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
         for sy in (-1, 1):
             cell.append(f'<geom type="box" pos="{sx * PX} {sy * PY} {(TZ - 0.85) / 2}" size="0.04 0.04 {(TZ + 0.85) / 2}" material="alu" class="vis"/>')
         cell.append(f'<geom type="box" pos="{sx * PX} 0 {TZ}" size="0.04 {PY} 0.04" material="alu" class="vis"/>')
-        cell.append(f'<geom type="box" pos="{sx * 0.30} 0 {TZ}" size="0.04 {PY} 0.04" material="alu" class="vis"/>')
+        # carriers over the robot head (x ±120 mm): rod pair 1 rises past the head edge, nothing may hang over it
+        cell.append(f'<geom name="carrier{"L" if sx < 0 else "R"}" type="box" pos="{sx * 0.12} 0 {g.MOUNT_Z + 0.07}" size="0.04 {PY} 0.04" material="alu" class="vis"/>')
         cell.append(f'<geom type="box" pos="{sx * (PX + 0.05)} 0 0.25" size="0.003 {PY - 0.03} 0.95" material="acrylic" class="vis"/>')
     for sy in (-1, 1):
         cell.append(f'<geom type="box" pos="0 {sy * PY} {TZ}" size="{PX + 0.04} 0.04 0.04" material="alu" class="vis"/>')
         for sx in (-1, 1):
             cell.append(f'<geom type="box" pos="{sx * 0.61} {sy * (PY + 0.05)} 0.25" size="0.19 0.003 0.95" material="acrylic" class="vis"/>')
         cell.append(f'<geom type="box" pos="0 {sy * (PY + 0.05)} 0.82" size="0.42 0.003 0.38" material="acrylic" class="vis"/>')
-    cell.append(f'<geom type="box" pos="0 0 {g.MOUNT_Z + 0.015}" size="0.35 0.21 0.015" material="alu" class="vis"/>')
+    # adapter plate inside the rod-1 pivots (x ±165 mm, inner M20 row of the connecting dimensions)
+    cell.append(f'<geom name="mountplate" type="box" pos="0 0 {g.MOUNT_Z + 0.015}" size="0.165 0.21 0.015" material="alu" class="vis"/>')
     # robot head (fixed), gearboxes and motors (motors are not in the vendor CAD)
     head = [
         f'<geom type="box" pos="0 0 {ZM + 0.155}" size="0.215 0.145 0.015" material="alu" class="vis"/>',
@@ -164,7 +166,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
   <body name="upperL" pos="{v3(*A_L)}">
     <joint name="mL" axis="0 1 0" armature="{armature:.4f}" range="-2.2 2.2"/>
     {inertial("upper", mirror=True, origin=A_L)}
-    {lgeoms("upperL", [capsule((0, 0), ue_l, 0.042, "carbon")])}
+    {lgeoms("upperL", [capsule((0, 0), ue_l, 0.042, "carbon", name="upperL")])}
     <body name="lowerL" pos="{v3(*ue_l)}">
       <joint name="eL" axis="0 1 0"/>
       {inertial("lower", mirror=True, origin=E_L)}
@@ -185,7 +187,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
   <body name="upperR" pos="{v3(*A_R)}">
     <joint name="mR" axis="0 1 0" armature="{armature:.4f}" range="-2.2 2.2"/>
     {inertial("upper", origin=A_R)}
-    {lgeoms("upperR", [capsule((0, 0), ue_r, 0.042, "carbon")])}
+    {lgeoms("upperR", [capsule((0, 0), ue_r, 0.042, "carbon", name="upperR")])}
     <body name="lowerR" pos="{v3(*ue_r)}">
       <joint name="eR" axis="0 1 0"/>
       {inertial("lower", origin=E_R)}
@@ -194,7 +196,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
     <body name="tri" pos="{v3(*ue_r)}">
       <joint name="tri" axis="0 1 0"/>
       {inertial("tri", origin=E_R)}
-      {lgeoms("tri", [capsule((0, 0), g.O1, 0.02, "alu", y=0.085), capsule((0, 0), g.O2, 0.02, "alu", y=0.085), capsule(g.O1, g.O2, 0.02, "alu", y=0.085)])}
+      {lgeoms("tri", [capsule((0, 0), g.O1, 0.026, "alu", name="tri0", y=0.085), capsule((0, 0), g.O2, 0.026, "alu", name="tri1", y=0.085), capsule(g.O1, g.O2, 0.026, "alu", name="tri2", y=0.085)])}
       <body name="rod2" pos="{v3(*g.O2)}">
         <joint name="r2" axis="0 1 0"/>
         {inertial("rod2", origin=TRI_LOW)}
@@ -205,7 +207,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
   <body name="rod1" pos="{v3(*ROD1_BASE)}">
     <joint name="r1" axis="0 1 0"/>
     {inertial("rod1", origin=ROD1_BASE)}
-    {lgeoms("rod1", [capsule((0, 0), rel(TRI_TOP, ROD1_BASE), 0.0075, "carbon", y=0.1015), capsule((0, 0), rel(TRI_TOP, ROD1_BASE), 0.0075, "carbon", y=-0.1015)])}
+    {lgeoms("rod1", [capsule((0, 0), rel(TRI_TOP, ROD1_BASE), 0.0135, "carbon", name="rod1a", y=0.1015), capsule((0, 0), rel(TRI_TOP, ROD1_BASE), 0.0135, "carbon", name="rod1b", y=-0.1015)])}
   </body>'''
 
     # photo-eyes: rangefinders across the belts (site z axis points across, toward -so for belt A)

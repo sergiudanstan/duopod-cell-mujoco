@@ -28,6 +28,33 @@ def test_mjcf_matches_analytic_kinematics():
     assert worst_loop < 0.5e-3, f"loop closure off by {worst_loop * 1e3:.3f} mm"
 
 
+MOVING = ["rod1a", "rod1b", "tri0", "tri1", "tri2", "upperL", "upperR"]
+SUPPORT = ["mountplate", "carrierL", "carrierR"]
+
+
+def test_support_clears_robot_over_datasheet_range():
+    """Rod pair 1, the triangle and the upper arms stay >= 10 mm from the adapter plate and the carriers
+    over the whole 1000 x 400 datasheet range (MuJoCo geometry distance, real poses with closed loops)."""
+    cell = sim.Cell(g.Params(), use_mesh=False)
+    m, d = cell.m, cell.d
+    ids = [(m.geom(a).id, m.geom(b).id, a, b) for a in MOVING for b in SUPPORT]
+    fromto = np.zeros(6)
+    worst = (1.0, "")
+    for x in np.linspace(-0.5, 0.5, 21):
+        for zf in np.linspace(FLANGE_TOP, FLANGE_TOP - 0.4, 9):
+            tcp = (float(x), float(zf - g.TOOL_LEN))
+            if g.ik2(tcp) is None:
+                continue
+            cell.set_robot(tcp)
+            mujoco.mj_forward(m, d)
+            for g1, g2, a, b in ids:
+                dist = mujoco.mj_geomDistance(m, d, g1, g2, 0.5, fromto)
+                if dist < worst[0]:
+                    worst = (dist, f"{a} <-> {b} at x {x:.2f}, flange z {zf:.3f}")
+    print(f"\nsupport clearance over the datasheet range: {worst[0] * 1e3:.1f} mm ({worst[1]})")
+    assert worst[0] >= 0.010, f"{worst[0] * 1e3:.1f} mm: {worst[1]}"
+
+
 def test_closed_loops_and_level_plate(cycle):
     L = cycle.log
     assert max(L.eq_err) < 0.5e-3, f"loop error {max(L.eq_err) * 1e3:.3f} mm"

@@ -39,9 +39,12 @@ This project is the physics counterpart of the browser twins [duopod-cell](https
 | Cadence | 39.4 /min (the web twin predicts 39.5) |
 | Held carton never touches another carton | yes (fails under `--perturb`, as it must) |
 | Held carton clears the 220 mm infeed guides when lifted | ≥ 16.8 mm |
+| Support (adapter plate, carriers) clears rod pair 1, triangle and upper arms over the whole 1000 × 400 datasheet range | ≥ 33.7 mm (MuJoCo geometry distance) |
 | Measured joint torque vs analytic model, free motion | 2.5 % / 1.3 % RMS difference; peaks 172 / 185 Nm on both |
 | Motor torque at i = 40 | peak < 85 % Mmax, RMS < M0 |
 | Real-time factor | ~3× on an M-series Mac |
+
+**Robot support.** Rod pair 1 pivots on the head at x = ±166.5 mm, just under the mounting face, and rises outward past the head edge. The triangle and the upper arms rise up to ~210 mm above the face. The adapter plate therefore stays inside the rod pivots (x ±165 mm, inner M20 row) and the carriers sit over it (x ±120 mm). The first layout (700 mm plate, carriers at ±300 mm) was hit by the rods by up to 20.6 mm, and the test above catches it.
 
 ## Run
 
