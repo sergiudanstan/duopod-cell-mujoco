@@ -45,7 +45,7 @@ VAC = dict(dp=30e3, sealed=0.70, mu=0.5, sf_req=2.0)
 
 # ---------------------------------------------------------------- cell
 CARTON = dict(x=0.180, y=0.250, h=0.120, m=3.0)
-BELT_A = dict(x=0.20, w=0.20, v=0.40, y0=-1.75, y1=0.40)    # infeed, flows +y; guides 200 mm apart (10 mm play per side) keep
+BELT_A = dict(x=0.20, w=0.22, v=0.40, y0=-1.75, y1=0.40)    # infeed, flows +y; guides 220 mm apart (20 mm play per side) keep
 #   the carton centred under the gripper - with real friction a 300 mm gap lets it drift sideways
 BELT_B = dict(x=-0.20, w=0.30, v=0.40, y0=-0.55, y1=1.75)   # outfeed, continuous
 GUIDE_T, GUIDE_TOP = 0.010, 0.060

@@ -2,6 +2,8 @@
 
 A physics simulation in [MuJoCo](https://mujoco.org) of a ceiling-mounted 2-axis parallel robot (modelled on the Autonox DuoPod RVS2-1000-3kg). It moves 3 kg cartons from an infeed conveyor to the conveyor beside it.
 
+**Photoreal view:** the recorded physics run plays in the Pro scene, in **MuJoCo physics** mode: https://sergiudanstan.github.io/duopod-cell-pro/
+
 This project is the physics counterpart of the browser twins [duopod-cell](https://sergiudanstan.github.io/duopod-cell/) and [duopod-cell-pro](https://sergiudanstan.github.io/duopod-cell-pro/). It uses the same geometry, cycle logic and interlocks, now with real contacts, friction, suction and closed-chain dynamics.
 
 ## What is simulated
@@ -19,7 +21,7 @@ This project is the physics counterpart of the browser twins [duopod-cell](https
 
 **Cartons.** Free bodies, 180 × 250 × 120 mm and 3 kg each.
 - The conveyors drive them by friction, capped at μN.
-- They queue against a pneumatic escapement (blade and side clamp) and stop at a fixed end stop.
+- They queue against a pneumatic escapement and stop at a fixed end stop. The escapement has a blade and a **top clamp**: an earlier side clamp pushed the queued carton against the opposite guide, and it then rubbed the guide while being lifted.
 
 **Cell controller.** It runs on sensors: rangefinder photo-eyes at the end stop, the stop zone, the queue head, the blade gate, the clamp and the belt-B drop zone.
 - The escapement opens only when the stop zone is empty and the pick column is clear.
@@ -36,6 +38,7 @@ This project is the physics counterpart of the browser twins [duopod-cell](https
 | 12 cartons transferred, upright, between the guides | yes, 19.4 s |
 | Cadence | 39.4 /min (the web twin predicts 39.5) |
 | Held carton never touches another carton | yes (fails under `--perturb`, as it must) |
+| Held carton clears the 220 mm infeed guides when lifted | ≥ 16.8 mm |
 | Measured joint torque vs analytic model, free motion | 2.5 % / 1.3 % RMS difference; peaks 172 / 185 Nm on both |
 | Motor torque at i = 40 | peak < 85 % Mmax, RMS < M0 |
 | Real-time factor | ~3× on an M-series Mac |
@@ -48,6 +51,7 @@ uv run pytest -q -s                 # physics checks
 uv run pytest -q --perturb          # escapement interlock removed: the collision test must fail
 uv run python tools/run_cycle.py    # headless run with a short report
 uv run python tools/render.py       # MP4 + PNG in ~/Downloads/duopod_cell_mujoco/
+uv run python tools/export_trajectory.py   # physics run -> ../duopod-cell-pro/physics/duopod_physics.json (photoreal replay)
 uv run mjpython tools/view.py       # interactive viewer (macOS; use python on Linux / Windows)
 ```
 

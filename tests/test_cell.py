@@ -58,6 +58,12 @@ def test_no_carton_collision_while_held(cycle):
     assert not hits, f"{len(hits)} contact samples, first at {hits[0][0]:.2f} s between cartons {hits[0][1]} and {hits[0][2]}, depth {hits[0][3] * 1e3:.1f} mm"
 
 
+def test_held_carton_clears_the_infeed_guides(cycle):
+    """The carton is lifted out of the 220 mm guides without rubbing: lateral gap >= 5 mm on both sides."""
+    gaps = cycle.log.guide_gap
+    assert gaps and min(gaps) >= 0.005, f"min lateral gap {min(gaps) * 1e3:.1f} mm"
+
+
 def test_vacuum_holds(cycle):
     slip = max(cycle.log.slip) if cycle.log.slip else 0.0
     assert slip < 5e-3, f"carton moved {slip * 1e3:.2f} mm relative to the pad in transit"

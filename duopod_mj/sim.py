@@ -33,6 +33,7 @@ class Log:
     slip: list = field(default_factory=list)       # held carton offset change relative to the pad, m
     cc_contact: list = field(default_factory=list)  # (t, k1, k2, depth) carton-carton contacts while one is held
     pad_force: list = field(default_factory=list)   # normal contact force on the pad, N (0 = free motion)
+    guide_gap: list = field(default_factory=list)   # lateral gap held carton <-> belt A guides while it is in the pick column, m
     events: list = field(default_factory=list)
 
 
@@ -360,6 +361,10 @@ class Cell:
                 mujoco.mj_contactForce(self.m, d, i, buf)
                 fsum += abs(buf[0])
         L.pad_force.append(fsum)
+        if self.held is not None and self.state in ("holdB", "transfer"):
+            c = self.carton_pos(self.held)
+            if abs(c[0] - g.BELT_A["x"]) < 0.03 and c[2] - g.CARTON["h"] / 2 < g.GUIDE_TOP:
+                L.guide_gap.append(g.BELT_A["w"] / 2 - g.CARTON["x"] / 2 - abs(c[0] - g.BELT_A["x"]))
         if self.held is not None and self.held_offset is not None:
             off = np.array(self.carton_pos(self.held)) - np.array(self.tcp())
             L.slip.append(float(np.linalg.norm(off - self.held_offset)))

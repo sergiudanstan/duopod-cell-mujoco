@@ -146,9 +146,9 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
       <joint name="blade" type="slide" axis="{so} 0 0" range="0 0.13" damping="50"/>
       <geom name="blade" type="box" pos="{-so * 0.10} 0 0" size="0.10 0.004 0.02" material="yellow" class="env" mass="0.3" priority="1" friction="0.2 0.005 0.0001"/>
     </body>
-    <body name="clamp" pos="{A["x"] + so * (A["w"] / 2 + 0.005)} {clamp_y} 0.035">
-      <joint name="clamp" type="slide" axis="{-so} 0 0" range="0 0.03" damping="30"/>
-      <geom name="clamp" type="box" size="0.004 0.06 0.018" material="rubber" class="env" mass="0.2" priority="1" friction="1.0 0.005 0.0001"/>
+    <body name="clamp" pos="{A["x"]} {clamp_y} {g.CARTON["h"] + 0.028}">
+      <joint name="clamp" type="slide" axis="0 0 -1" range="0 0.03" damping="30"/>
+      <geom name="clamp" type="box" size="0.06 0.05 0.006" material="rubber" class="env" mass="0.2" priority="1" friction="1.0 0.005 0.0001"/>
     </body>'''
 
     # ---------------- robot (CAD reference pose, axis-aligned body frames)
@@ -299,7 +299,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
     <motor name="mL" joint="mL" ctrlrange="{-tq_max:.1f} {tq_max:.1f}"/>
     <motor name="mR" joint="mR" ctrlrange="{-tq_max:.1f} {tq_max:.1f}"/>
     <position name="blade" joint="blade" kp="4000" kv="120" ctrlrange="0 0.13" forcerange="-400 400"/>
-    <position name="clamp" joint="clamp" kp="3000" kv="80" ctrlrange="0 0.03" forcerange="-180 180"/>
+    <position name="clamp" joint="clamp" kp="3000" kv="80" ctrlrange="0 0.03" forcerange="-180 180"/>   <!-- top clamp: presses the queued carton from above, no sideways push -->
     <adhesion name="vacuum" body="gripper" ctrlrange="0 1" gain="{vac_force:.1f}"/>
   </actuator>
   <sensor>
