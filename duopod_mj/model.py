@@ -191,7 +191,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
     <body name="lowerR" pos="{v3(*ue_r)}">
       <joint name="eR" axis="0 1 0"/>
       {inertial("lower", origin=E_R)}
-      {lgeoms("lowerR", [capsule((0, 0), lj_r, 0.031, "carbon")])}
+      {lgeoms("lowerR", [capsule((0, 0), lj_r, 0.031, "carbon", name="lowerR")])}
     </body>
     <body name="tri" pos="{v3(*ue_r)}">
       <joint name="tri" axis="0 1 0"/>
@@ -200,7 +200,7 @@ def build_xml(p: g.Params | None = None, use_mesh: bool | None = None) -> str:
       <body name="rod2" pos="{v3(*g.O2)}">
         <joint name="r2" axis="0 1 0"/>
         {inertial("rod2", origin=TRI_LOW)}
-        {lgeoms("rod2", [capsule((0, 0), rel(PLATE_PIVOT, TRI_LOW), 0.007, "carbon", y=0.071), capsule((0, 0), rel(PLATE_PIVOT, TRI_LOW), 0.007, "carbon", y=-0.071)])}
+        {lgeoms("rod2", [capsule((0, 0), rel(PLATE_PIVOT, TRI_LOW), 0.0135, "carbon", name="rod2a", y=0.071), capsule((0, 0), rel(PLATE_PIVOT, TRI_LOW), 0.0135, "carbon", name="rod2b", y=-0.071)])}
       </body>
     </body>
   </body>

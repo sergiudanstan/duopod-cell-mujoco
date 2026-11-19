@@ -55,6 +55,29 @@ def test_support_clears_robot_over_datasheet_range():
     assert worst[0] >= 0.010, f"{worst[0] * 1e3:.1f} mm: {worst[1]}"
 
 
+def test_rods_pass_beside_the_arms():
+    """Rod pairs 1 and 2 cross the right upper and lower arm in the plane; in 3D they pass beside them (>= 5 mm),
+    over the whole datasheet range (MuJoCo geometry distance on the closed-loop poses)."""
+    cell = sim.Cell(g.Params(), use_mesh=False)
+    m, d = cell.m, cell.d
+    pairs = [(a, b) for a in ["rod1a", "rod1b", "rod2a", "rod2b"] for b in ["upperR", "lowerR"]]
+    ft = np.zeros(6)
+    worst = (1.0, "")
+    for x in np.linspace(-0.5, 0.5, 41):
+        for zf in np.linspace(FLANGE_TOP, FLANGE_TOP - 0.4, 17):
+            tcp = (float(x), float(zf - g.TOOL_LEN))
+            if g.ik2(tcp) is None:
+                continue
+            cell.set_robot(tcp)
+            mujoco.mj_forward(m, d)
+            for a, b in pairs:
+                dist = mujoco.mj_geomDistance(m, d, m.geom(a).id, m.geom(b).id, 0.5, ft)
+                if dist < worst[0]:
+                    worst = (dist, f"{a} <-> {b} at x {x:.2f}")
+    print(f"\nrods vs arms: {worst[0] * 1e3:.1f} mm ({worst[1]})")
+    assert worst[0] >= 0.005, f"{worst[0] * 1e3:.1f} mm: {worst[1]}"
+
+
 def test_closed_loops_and_level_plate(cycle):
     L = cycle.log
     assert max(L.eq_err) < 0.5e-3, f"loop error {max(L.eq_err) * 1e3:.3f} mm"
