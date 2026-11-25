@@ -1,5 +1,10 @@
 # DuoPod transfer cell — MuJoCo
 
+[![CI](https://github.com/sergiudanstan/duopod-cell-mujoco/actions/workflows/ci.yml/badge.svg)](https://github.com/sergiudanstan/duopod-cell-mujoco/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/sergiudanstan/duopod-cell-mujoco/actions/workflows/codeql.yml/badge.svg)](https://github.com/sergiudanstan/duopod-cell-mujoco/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/sergiudanstan/duopod-cell-mujoco/badge)](https://scorecard.dev/viewer/?uri=github.com/sergiudanstan/duopod-cell-mujoco)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A physics simulation in [MuJoCo](https://mujoco.org) of a ceiling-mounted 2-axis parallel robot (modelled on the Autonox DuoPod RVS2-1000-3kg). It moves 3 kg cartons from an infeed conveyor to the conveyor beside it.
 
 **Photoreal view:** the recorded physics run plays in the Pro scene, in **MuJoCo physics** mode: https://sergiudanstan.github.io/duopod-cell-pro/
@@ -63,6 +68,10 @@ uv run mjpython tools/view.py       # interactive viewer (macOS; use python on L
 `tools/export_meshes.py` converts a local vendor GLB into STL meshes in `_cad/meshes/` (git-ignored). The model then shows the vendor parts on the same bodies. Without them it shows the procedural geometry.
 
 The vendor CAD is not redistributed. Autonox, DuoPod and Beckhoff are trademarks of their owners.
+
+## Development
+
+`uv sync --locked && uv run pytest -q` runs the physics checks (about 15 s, headless, no rendering). CI also runs `uv run pytest -q --perturb -k test_no_carton_collision_while_held` and requires it to fail. See [CONTRIBUTING.md](CONTRIBUTING.md) for branches and releases, [SECURITY.md](SECURITY.md) for reporting vulnerabilities, and [CHANGELOG.md](CHANGELOG.md) for history.
 
 ## Limits
 
