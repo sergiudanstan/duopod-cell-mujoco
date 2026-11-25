@@ -3,7 +3,7 @@ name = "duopod-cell-mujoco"
 version = "0.1.0"
 description = "MuJoCo physics simulation of a 2-axis parallel robot transfer cell (3 kg cartons, conveyor to conveyor)"
 requires-python = ">=3.12"
-dependencies = ["mujoco==3.17.0", "numpy>=2.0", "imageio[ffmpeg]>=2.34"]
+dependencies = ["mujoco==4.0.1", "numpy>=2.0", "imageio[ffmpeg]>=2.34"]
 
 [dependency-groups]
 dev = ["pytest>=8"]
